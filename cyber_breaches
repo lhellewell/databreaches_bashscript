@@ -7,11 +7,32 @@ then
     exit 1;
 fi
 
+# Command line options
+options="
+
+		maxstate
+			Returns the two letter code for the state that has the largest number of incidents across all years, and the corresponding count. 
+			(If more than one, any one of them is returned).
+
+		maxyear
+			Returns the year with the greatest number of incidences across all the states, and the corresponding count. 
+			(If more than one, any one of them is returned).
+
+		A two letter state code (AZ)
+			Returns the year with the maximum number of incidents, and the count. 
+			(If more than one, any one of them is returned).
+
+		A four digit year (YYYY)
+			Returns the state with the maximum number of incidents for that year, and the count. 
+			(If more than one, any one of them is returned).
+			"
+
 # Get the file name
 file=$1
 
 # Get the command
 cmd=$2;
+
 if [[ $cmd == "max"* ]]; 
 then
 	if [[ $cmd == "maxstate" ]]; 
@@ -114,26 +135,11 @@ then
 	fi
 elif [[ $cmd =~ .{1,} ]];
 then
-	echo "Invalid command, the valid commands and their inputs are below:
-
-		maxstate
-			Returns the two letter code for the state that has the largest number of incidents across all years, and the corresponding count. 
-			(If more than one, any one of them is returned).
-
-		maxyear
-			Returns the year with the greatest number of incidences across all the states, and the corresponding count. 
-			(If more than one, any one of them is returned).
-
-		A two letter state code (AZ)
-			Returns the year with the maximum number of incidents, and the count. 
-			(If more than one, any one of them is returned).
-
-		A four digit year (YYYY)
-			Returns the state with the maximum number of incidents for that year, and the count. 
-			(If more than one, any one of them is returned).
-
-	"
+	echo "	Invalid command, the valid commands and their inputs are below: $options"
 	exit 1
+else
+	echo "	Command Options: $options"
+	exit 0
 fi
 
 echo "got to end"
