@@ -1,15 +1,8 @@
 #!/bin/bash
 
-# Check if file exists
-if [[ ! -f "$1" ]] 
-then
-    echo "File not found!"
-    exit 1;
-fi
-
 # Command line options
 options="
-
+	cyber_breaches <filename> <command>
 		maxstate
 			Returns the two letter code for the state that has the largest number of incidents across all years, and the corresponding count. 
 			(If more than one, any one of them is returned).
@@ -26,6 +19,18 @@ options="
 			Returns the state with the maximum number of incidents for that year, and the count. 
 			(If more than one, any one of them is returned).
 			"
+
+# Displays options
+if [ $# -eq 0 ]; then
+    echo "$options"
+    exit 0
+
+elif [[ ! -f "$1" ]] # File not found in directory
+then
+    echo "File not found!"
+    exit 1;
+fi
+
 
 # Get the file name
 file=$1
@@ -135,12 +140,9 @@ then
 	fi
 elif [[ $cmd =~ .{1,} ]];
 then
-	echo "	Invalid command, the valid commands and their inputs are below: $options"
+	echo "	Invalid command, please execute without arguments to view commands."
 	exit 1
 else
-	echo "	Command Options: $options"
+	echo "	Missing command, please execute without arguments to view commands."
 	exit 0
 fi
-
-echo "got to end"
-exit 0;
