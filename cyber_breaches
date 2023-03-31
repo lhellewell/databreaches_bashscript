@@ -62,7 +62,7 @@ then
 		# Count the occurrences of the state for the current year
 		count=$(cut -f2,8 -d"	" "$file" | tail -n +2| grep "^$cmd	$year" | wc -l)
 
-		# Check if it is larger than current maximum
+		# Check count is larger than current maximum
 		if [[ $count -gt $maxCount ]]; 
 		then
         	maxCount=$count
@@ -75,10 +75,65 @@ then
 		echo "The state does not appear in the provided file with filename: $file.
 		"
 		exit 1
+	else
+		echo "Year with greatest number of incidents for $cmd is in $maxYear with count $maxCount
+		"
+		exit 0
 	fi
-	echo "Year with greatest number of incidents for $cmd is in $maxYear with count $maxCount
+elif [[ $cmd =~ ^[0-9]{4}$ ]];
+then
+	# Extract the states where recorded breaches occurred (for iteration)
+	states=$(cut -f2 -d"	" "$file" | tail -n +2 | sort | uniq)
+
+	# Initialise the max variables
+	maxCount=0
+	maxState=""
+
+	# Iterate through each state
+	for state in $states; do
+		# Count the occurrences of the year in the current state
+		count=$(cut -f2,8 -d"	" "$file" | tail -n +2| grep "^$state	$cmd" | wc -l)
+
+		# Check count is larger than current maximum
+		if [[ $count -gt $maxCount ]]; 
+		then
+        	maxCount=$count
+        	maxState=$maxState
+    	fi
+	done
+
+	if [[ $maxCount -eq 0 ]];
+	then
+		echo "The year does not appear in the provided file with filename: $file.
+		"
+		exit 1
+	else
+		echo "State with greatest number of incidents for $cmd is in $maxState with count $maxCount
+		"
+		exit 0
+	fi
+elif [[ $cmd =~ .{1,} ]];
+then
+	echo "Invalid command, the valid commands and their inputs are below:
+
+		maxstate
+			Returns the two letter code for the state that has the largest number of incidents across all years, and the corresponding count. 
+			(If more than one, any one of them is returned).
+
+		maxyear
+			Returns the year with the greatest number of incidences across all the states, and the corresponding count. 
+			(If more than one, any one of them is returned).
+
+		A two letter state code (AZ)
+			Returns the year with the maximum number of incidents, and the count. 
+			(If more than one, any one of them is returned).
+
+		A four digit year (YYYY)
+			Returns the state with the maximum number of incidents for that year, and the count. 
+			(If more than one, any one of them is returned).
+
 	"
-	exit 0
+	exit 1
 fi
 
 echo "got to end"
