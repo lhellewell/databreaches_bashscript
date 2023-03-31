@@ -23,7 +23,8 @@ then
 		occurences=$(echo $topState | cut -d ' ' -f1)
 		state=$(echo $topState | cut -d ' ' -f2)
 
-		echo "State with greatest number of incidents is: $state with count $occurences"
+		echo "State with greatest number of incidents is: $state with count $occurences
+		"
 
 		exit 0;
 	elif [[ $cmd == "maxyear" ]]; 
@@ -35,11 +36,13 @@ then
 		occurences=$(echo $topYear | cut -d ' ' -f1)
 		year=$(echo $topYear | cut -d ' ' -f2)
 
-		echo "Year with greatest number of incidents is: $year with count $occurences"
+		echo "Year with greatest number of incidents is: $year with count $occurences
+		"
 
 		exit 0;
 	else
-		echo "The max commands are either maxstate or maxyear"
+		echo "The max commands are either maxstate or maxyear
+		"
 		exit 1;
 	fi
 elif [[ $cmd =~ ^[A-Za-z]{2}$ ]];
@@ -48,7 +51,7 @@ then
 	cmd=${cmd^^}
 
 	# Extract the years where recorded breaches occurred (for iteration)
-	years=$(cut -f8 -d"	" "$file" | sort | uniq)
+	years=$(cut -f8 -d"	" "$file" | tail -n +2 | sort | uniq)
 	
 	# Initialize the max variables
 	maxCount=0
@@ -57,7 +60,7 @@ then
 	# Iterate through each year
 	for year in $years; do
 		# Count the occurrences of the state for the current year
-		count=$(cut -f2,8 -d"	" "$file" | grep "^$cmd	$year" | wc -l)
+		count=$(cut -f2,8 -d"	" "$file" | tail -n +2| grep "^$cmd	$year" | wc -l)
 
 		# Check if it is larger than current maximum
 		if [[ $count -gt $maxCount ]]; 
@@ -67,7 +70,14 @@ then
     	fi
 	done
 
-	echo "Year with greatest number of incidents for $cmd is in $maxYear with count $maxCount"
+	if [[ $maxCount -eq 0 ]];
+	then
+		echo "The state does not appear in the provided file with filename: $file.
+		"
+		exit 1
+	fi
+	echo "Year with greatest number of incidents for $cmd is in $maxYear with count $maxCount
+	"
 	exit 0
 fi
 
