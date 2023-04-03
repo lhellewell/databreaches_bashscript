@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# by Lewis Hellewell (22943954)
+# Abstract max commands to reduce code repitition, however, abstract for other two would hurt readability and create too much conditional clutter
+
 # Command line options
 options="
 	cyber_breaches <filename> <command>
@@ -27,7 +30,7 @@ if [ $# -eq 0 ]; then
 
 elif [[ ! -f "$1" ]] # File not found in directory
 then
-    echo "File not found!"
+    echo "	File not found!"
     exit 1;
 fi
 
@@ -38,31 +41,32 @@ file=$1
 # Get the command
 cmd=$2;
 
+# Abstract max commands to avoid repetition of code
+# Grabs any command with max infront incase of incorrect value type input
 if [[ $cmd == "max"* ]]; 
 then
-	if [[ $cmd == "maxstate" ]]; 
+	if [[ $cmd == "maxstate"  || $cmd == "maxyear" ]]; 
 	then
-		# State with most occurances in file
-		topState=$(cut -f 2 "$file" | sort | uniq -c | sort -rn | head -n 1)
+		# Initialises the two abstract variables
+		columnNumber=0
+		valueType=""
+		if [[ $cmd == "maxstate" ]];
+		then
+			columnNumber=2	# Column number to cut from the data file
+			valueType="State"
+		else
+			columnNumber=8	# Column number to cut from the data file
+			valueType="Year"
+		fi
+		
+		# Value with most occurances in file
+		topValue=$(cut -f $columnNumber "$file" | sort | uniq -c | sort -rn | head -n 1)
 
-		# Extract state code and occurences
-		occurences=$(echo $topState | cut -d ' ' -f1)
-		state=$(echo $topState | cut -d ' ' -f2)
+		# Extract value and the occurences
+		occurences=$(echo $topValue | cut -d ' ' -f1)
+		value=$(echo $topValue | cut -d ' ' -f2)
 
-		echo "State with greatest number of incidents is: $state with count $occurences
-		"
-
-		exit 0;
-	elif [[ $cmd == "maxyear" ]]; 
-	then
-		# Year with most occurances in file
-		topYear=$(cut -f 8 "$file" | sort | uniq -c | sort -rn | head -n 1)
-
-		# Extract state code and occurences
-		occurences=$(echo $topYear | cut -d ' ' -f1)
-		year=$(echo $topYear | cut -d ' ' -f2)
-
-		echo "Year with greatest number of incidents is: $year with count $occurences
+		echo "$valueType with greatest number of incidents is: $value with count $occurences
 		"
 
 		exit 0;
@@ -140,9 +144,9 @@ then
 	fi
 elif [[ $cmd =~ .{1,} ]];
 then
-	echo "	Invalid command, please execute without arguments to view commands."
+	echo "	Invalid command argument, please execute without arguments and filename to view valid commands."
 	exit 1
 else
-	echo "	Missing command, please execute without arguments to view commands."
+	echo "	Missing command argument, please execute without arguments and filename to view valid commands."
 	exit 0
 fi
